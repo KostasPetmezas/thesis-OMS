@@ -1,0 +1,27 @@
+# --- Java & Spring Boot ---
+target/
+*.jar
+*.war
+.mvn/
+mvnw
+mvnw.cmd
+
+# --- Angular & Node ---
+node_modules/
+dist/
+.angular/
+
+# --- IDEs ---
+.idea/
+*.iml
+.vscode/
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- Docker Database Volumes ---
+api-gateway/volume-data/
+inventory_service/docker/mysql/data/
+product_service/data/
+order_service/mysql/
