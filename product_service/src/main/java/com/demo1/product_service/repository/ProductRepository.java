@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends MongoRepository<Product,String> {
     List<Product> findByCategory(String category);
@@ -20,4 +21,7 @@ public interface ProductRepository extends MongoRepository<Product,String> {
 
     // 2. Filter by category AND search for a specific word
     Page<Product> findByNameContainingIgnoreCaseAndCategory(String name, String category, Pageable pageable);
+
+    // Method for product page
+    Optional<Product> findBySkuCode(String skuCode);
 }

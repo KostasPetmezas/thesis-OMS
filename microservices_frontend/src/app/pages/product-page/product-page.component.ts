@@ -1,9 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router'; // NEW
+import { ActivatedRoute } from '@angular/router'; // <-- To read the URL
 import { CartService } from '../../services/cart/cart.service';
-import { ProductService } from '../../services/product/product.service'; // NEW
+import { ProductService } from '../../services/product/product.service'; // <-- To fetch the DB
 
 @Component({
   selector: 'app-product-page',
@@ -17,32 +17,30 @@ export class ProductPageComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly route = inject(ActivatedRoute);
 
-  // We set product to 'any' for now, and it starts empty
-  product: any;
+  product: any = undefined;
   quantity = 1;
   isLoading = true;
   errorMessage = '';
 
   ngOnInit(): void {
-    // 1. Grab the ID or SKU from the URL (e.g., /product/123)
-    // Make sure your routing file uses 'skuCode' like: { path: 'product/:skuCode', ... }
+    // 1. Grab the SKU from the URL (e.g., /product/airpods_pro_2)
     const skuCode = this.route.snapshot.paramMap.get('skuCode');
 
     if (skuCode) {
-      // 2. Fetch the data from the database
+      // 2. Fetch the real data from your Spring Boot database!
       this.productService.getProductBySku(skuCode).subscribe({
         next: (data) => {
           this.product = data;
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Error fetching product', err);
+          console.error('Error fetching product from database:', err);
           this.errorMessage = 'Product not found.';
           this.isLoading = false;
         }
       });
     } else {
-      this.errorMessage = 'Invalid URL parameter.';
+      this.errorMessage = 'Invalid URL.';
       this.isLoading = false;
     }
   }
@@ -57,16 +55,20 @@ export class ProductPageComponent implements OnInit {
     }
   }
 
-  addToCart() {
+  addToCart(product: any, quantityStr: string) {
+    const quantity = parseInt(quantityStr, 10);
+    if (isNaN(quantity) || quantity <= 0) {
+      alert("Please enter a valid quantity.");
+      return;
+    }
     const cartItem = {
-      skuCode: this.product.skuCode, // Ensure this matches your DB field exactly
-      price: this.product.price,
-      quantity: this.quantity
+      skuCode: product.skuCode,
+      price: product.price,
+      quantity: quantity
     };
-
     this.cartService.addToCart(cartItem).subscribe({
       next: () => {
-        alert(`${this.product.name} was successfully added to your cart!`);
+        alert(`${product.name} was successfully added to your cart!`);
       },
       error: (err) => {
         console.error('Failed to add to cart', err);

@@ -76,12 +76,12 @@ export class HomePageComponent implements OnInit {
 
   onCategoryChange(event: any) {
     this.selectedCategory = event.target.value;
-    this.currentPage = 0;
+    this.currentPage = 0; // Always reset to page 1 when changing categories
     this.loadProducts();
   }
 
   onSearch() {
-    this.currentPage = 0;
+    this.currentPage = 0; // Reset to page 1 when searching
     this.loadProducts();
   }
 
@@ -89,7 +89,7 @@ export class HomePageComponent implements OnInit {
     const value = event.target.value.split('-');
     this.sortBy = value[0];
     this.sortDir = value[1];
-    this.currentPage = 0;
+    this.currentPage = 0; // Reset to page 1 when sorting changes
     this.loadProducts();
   }
 
@@ -106,6 +106,7 @@ export class HomePageComponent implements OnInit {
       this.loadProducts();
     }
   }
+
 
   addToCart(product: any, quantityStr: string) {
     const quantity = parseInt(quantityStr, 10);
@@ -131,11 +132,6 @@ export class HomePageComponent implements OnInit {
 
   goToCreateProductPage() {
     this.router.navigateByUrl('/add-product');
-  }
-
-  // --- NEW NAVIGATION METHOD ---
-  goToProductPage(skuCode: string) {
-    this.router.navigate(['/product', skuCode]);
   }
 
   orderProduct(product: Product, quantity: string) {
@@ -165,6 +161,10 @@ export class HomePageComponent implements OnInit {
         })
       }
     })
+  }
+  // --- NEW NAVIGATION METHOD ---
+  goToProductPage(skuCode: string) {
+    this.router.navigate(['/product', skuCode]);
   }
 
   protected readonly history = history;
