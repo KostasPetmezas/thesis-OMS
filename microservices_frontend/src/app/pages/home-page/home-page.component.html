@@ -55,18 +55,22 @@
     @if (products.length > 0) {
       <ul class="list-none">
         @for (product of products; track product.id) {
-          <li class="mb-4 p-4 bg-gray-100 rounded-lg shadow-sm flex flex-col md:flex-row justify-between md:items-center">
+
+          <li class="mb-4 p-4 bg-gray-100 rounded-lg shadow-sm flex flex-col md:flex-row justify-between md:items-center cursor-pointer hover:bg-gray-200 hover:shadow-md transition duration-200"
+              (click)="goToProductPage(product.skuCode)">
+
             <div class="mb-2 md:mb-0">
               <span class="font-semibold text-lg">{{ product.name }}</span> <br/>
               <span class="text-gray-600 font-medium">Price: {{ product.price }}€</span>
               <br/>
               <span class="text-sm mt-2 block">
                 Quantity:
-                <input type="number" #quantityInput class="border border-gray-300 rounded px-2 py-1 w-20 ml-2" min="1" value="1"/>
+                <input type="number" #quantityInput (click)="$event.stopPropagation()" class="border border-gray-300 rounded px-2 py-1 w-20 ml-2 bg-white" min="1" value="1"/>
               </span>
             </div>
+
             <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
-                    (click)="addToCart(product, quantityInput.value)">
+                    (click)="$event.stopPropagation(); addToCart(product, quantityInput.value)">
               Add to Cart
             </button>
           </li>

@@ -40,4 +40,8 @@ export class ProductService {
   createProduct(product: Product): Observable<Product> {
     return this.http.post<Product>('http://localhost:9000/api/product', product);
   }
+
+  getProductBySku(skuCode: string): Observable<any> {
+    return this.http.get<any>(`http://localhost:9000/api/product/${skuCode}`);
+  }
 }

@@ -34,7 +34,7 @@ export class HomePageComponent implements OnInit {
   orderSuccess = false;
   orderFailed = false;
 
-  // --- NEW STATE VARIABLES FOR SEARCH & PAGINATION ---
+  // --- STATE VARIABLES FOR SEARCH & PAGINATION ---
   currentPage = 0;
   pageSize = 10;
   searchQuery = '';
@@ -51,7 +51,6 @@ export class HomePageComponent implements OnInit {
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({isAuthenticated}) => {
         this.isAuthenticated = isAuthenticated;
-        // Replaced direct getProducts call with our new load method
         this.loadProducts();
       }
     )
@@ -77,12 +76,12 @@ export class HomePageComponent implements OnInit {
 
   onCategoryChange(event: any) {
     this.selectedCategory = event.target.value;
-    this.currentPage = 0; // Always reset to page 1 when changing categories
+    this.currentPage = 0;
     this.loadProducts();
   }
 
   onSearch() {
-    this.currentPage = 0; // Reset to page 1 when searching
+    this.currentPage = 0;
     this.loadProducts();
   }
 
@@ -90,7 +89,7 @@ export class HomePageComponent implements OnInit {
     const value = event.target.value.split('-');
     this.sortBy = value[0];
     this.sortDir = value[1];
-    this.currentPage = 0; // Reset to page 1 when sorting changes
+    this.currentPage = 0;
     this.loadProducts();
   }
 
@@ -108,7 +107,6 @@ export class HomePageComponent implements OnInit {
     }
   }
 
-  // --- YOUR EXISTING METHODS (UNCHANGED) ---
   addToCart(product: any, quantityStr: string) {
     const quantity = parseInt(quantityStr, 10);
     if (isNaN(quantity) || quantity <= 0) {
@@ -133,6 +131,11 @@ export class HomePageComponent implements OnInit {
 
   goToCreateProductPage() {
     this.router.navigateByUrl('/add-product');
+  }
+
+  // --- NEW NAVIGATION METHOD ---
+  goToProductPage(skuCode: string) {
+    this.router.navigate(['/product', skuCode]);
   }
 
   orderProduct(product: Product, quantity: string) {
