@@ -31,8 +31,11 @@ services:
       - "8181:8080"
     volumes:
       - ./api-gateway/docker/keycloak/realms/:/opt/keycloak/data/import/
+      # point to wherever your local theme folder is kept:
+      - ./api-gateway/docker/keycloak/themes/my-custom-theme:/opt/keycloak/themes/my-custom-theme
     depends_on:
       - keycloak-mysql
+
 
   # ==========================================
   # 2. CART SERVICE (Redis)

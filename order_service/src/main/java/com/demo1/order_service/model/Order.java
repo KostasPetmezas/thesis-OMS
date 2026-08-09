@@ -1,10 +1,12 @@
 package com.demo1.order_service.model;
 
+import com.demo1.order_service.dto.UserDetails;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 import java.math.BigDecimal;
 
@@ -23,4 +25,6 @@ public class Order {
     private BigDecimal price;
     private Integer quantity;
     private String userEmail;
+    @Embedded
+    private UserDetails userDetails;
 }

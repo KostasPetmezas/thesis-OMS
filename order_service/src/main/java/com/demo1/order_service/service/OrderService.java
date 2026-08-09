@@ -33,11 +33,11 @@ public class OrderService {
             order.setPrice(orderRequest.price());
             order.setSkuCode(orderRequest.skuCode());
             order.setQuantity(orderRequest.quantity());
-            order.setUserEmail(orderRequest.userDetails().email());
+            order.setUserDetails(orderRequest.userDetails());
 
             orderRepository.save(order);
 
-            //Send to Kafka
+            // Send to Kafka safely using the secure email
             OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent(order.getOrderNumber(), orderRequest.userDetails().email());
             log.info("Start - Sending OrderPlacedEvent {} to Kafka topic", orderPlacedEvent);
             kafkaTemplate.send("order-placed", orderPlacedEvent);
@@ -51,5 +51,10 @@ public class OrderService {
 
     public List<Order> getOrderHistory(String email) {
         return orderRepository.findByUserEmail(email);
+    }
+
+    public List<Order> getAllOrders() {
+        // findAll() is provided automatically by JpaRepository!
+        return orderRepository.findAll();
     }
 }

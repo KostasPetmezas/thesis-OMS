@@ -34,6 +34,8 @@ export class HomePageComponent implements OnInit {
   orderSuccess = false;
   orderFailed = false;
 
+  isAdmin = false;
+
   // --- STATE VARIABLES FOR SEARCH & PAGINATION ---
   currentPage = 0;
   pageSize = 10;
@@ -53,8 +55,15 @@ export class HomePageComponent implements OnInit {
         this.isAuthenticated = isAuthenticated;
         this.loadProducts();
       }
-    )
+    );
+    // 2. NEW: Check if the user is the admin
+    this.oidcSecurityService.userData$.subscribe(result => {
+      const username = result.userData?.preferred_username;
+      // If the username is exactly 'admin', flip the switch to true
+      this.isAdmin = (username === 'admin');
+    });
   }
+
 
   // METHODS FOR SEARCH, PAGINATION AND FILTER
   loadProducts() {

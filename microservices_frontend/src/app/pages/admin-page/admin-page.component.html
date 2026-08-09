@@ -1,0 +1,67 @@
+<main>
+  <div class="p-4">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold mb-4">Global Order Database</h1>
+    </div>
+
+    <!-- Access Denied State -->
+    @if (accessDenied) {
+      <div class="p-4 bg-red-100 text-red-700 rounded-lg shadow-sm font-semibold">
+        Access Denied. You do not have administrator privileges to view this page.
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading && !accessDenied) {
+      <div class="p-4 bg-gray-100 rounded-lg shadow-sm text-gray-700">
+        Loading global orders...
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && !accessDenied && allOrders.length === 0) {
+      <div class="p-4 bg-gray-100 rounded-lg shadow-sm text-gray-700">
+        No orders have been placed on the platform yet.
+      </div>
+    }
+
+    <!-- Success State -->
+    @if (!isLoading && !accessDenied && allOrders.length > 0) {
+      <div class="overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+        <table class="min-w-full text-left text-sm whitespace-nowrap">
+          <thead class="uppercase tracking-wider border-b border-gray-200 bg-gray-100 text-gray-600 font-semibold">
+          <tr>
+            <th scope="col" class="px-6 py-4">Customer</th>
+            <th scope="col" class="px-6 py-4">Order Number</th>
+            <th scope="col" class="px-6 py-4">SKU Code</th>
+            <th scope="col" class="px-6 py-4">Quantity</th>
+            <th scope="col" class="px-6 py-4">Price</th>
+            <th scope="col" class="px-6 py-4">Total</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (order of allOrders; track order.orderNumber) {
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="px-6 py-4">
+                  <!-- Notice the ?. which stops the crash if userDetails is null -->
+                  <div class="font-semibold text-gray-800">
+                    {{ order.userDetails?.firstName || 'Unknown' }} {{ order.userDetails?.lastName || 'User' }}
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    {{ order.userDetails?.email || 'No email provided' }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 font-mono text-gray-500">#{{ order.orderNumber | slice:0:8 }}...</td>
+                <td class="px-6 py-4 font-semibold text-gray-800">{{ order.skuCode }}</td>
+                <td class="px-6 py-4">{{ order.quantity }}</td>
+                <!-- Note: I kept your number pipe format, but swapped $ for € to match your platform -->
+                <td class="px-6 py-4">€{{ order.price | number:'1.2-2' }}</td>
+                <td class="px-6 py-4 font-bold text-gray-800">€{{ (order.price * order.quantity) | number:'1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</main>

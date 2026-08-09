@@ -4,9 +4,12 @@ export interface Order {
   skuCode: string;
   price: number;
   quantity: number;
-  userDetails?: UserDetails
+  userDetails?: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
 }
-
 export interface UserDetails {
   email: string;
   firstName: string;

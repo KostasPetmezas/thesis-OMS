@@ -12,6 +12,9 @@ export class OrderService {
   // 👇 THIS is the magic line that creates "this.http"
   constructor(private http: HttpClient) {
   }
+  getAllOrdersForAdmin(): Observable<Order[]> {
+    return this.http.get<Order[]>('http://localhost:9000/api/order/all');
+  }
 
   getOrderHistory() {
     const authDataString = sessionStorage.getItem('0-angular-client');
