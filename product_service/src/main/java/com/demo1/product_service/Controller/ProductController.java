@@ -33,19 +33,6 @@ public class ProductController {
         return productService.createProduct(productRequest);
     }
 
-    /*
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponse> getAllProducts(@RequestParam(required = false) String category) {
-        // If the frontend sent a category
-        if (category != null && !category.isBlank()) {
-            return productService.getAllProductsByCategory(category);
-        }
-        // If the frontend didn't send a category
-        return productService.getAllProducts();
-    }
-
-     */
     @GetMapping
     public Page<Product> getAllProducts(
             // 1. Pagination parameters (defaults to page 0, 10 items)

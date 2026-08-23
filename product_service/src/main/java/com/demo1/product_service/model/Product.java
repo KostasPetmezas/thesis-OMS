@@ -23,14 +23,14 @@ public class Product {
     private String skuCode;
     private BigDecimal price;
 
-    private String imageURL;
+    private String imageUrl;
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getId() {

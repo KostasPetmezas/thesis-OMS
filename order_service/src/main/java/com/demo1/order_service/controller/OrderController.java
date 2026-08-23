@@ -68,7 +68,11 @@ public class OrderController {
         return ResponseEntity.ok(allOrders);
     }
 
-
+    @PatchMapping("/{id}/status")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
+        orderService.updateOrderStatus(id, status);
+    }
 
 
 

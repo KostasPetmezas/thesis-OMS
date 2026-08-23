@@ -23,17 +23,18 @@ public class OrderService {
     private final KafkaTemplate<Object, OrderPlacedEvent> kafkaTemplate;
 
     public void placeOrder(OrderRequest orderRequest){
-        var isProductInStock=inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
+        var isProductInStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
 
         if(isProductInStock){
-
-            //map OrderRequest to Order obj
+            // map OrderRequest to Order obj
             Order order = new Order();
             order.setOrderNumber(UUID.randomUUID().toString());
             order.setPrice(orderRequest.price());
             order.setSkuCode(orderRequest.skuCode());
             order.setQuantity(orderRequest.quantity());
             order.setUserDetails(orderRequest.userDetails());
+
+            // The status defaults to "PENDING" automatically from the Order entity!
 
             orderRepository.save(order);
 
@@ -43,18 +44,25 @@ public class OrderService {
             kafkaTemplate.send("order-placed", orderPlacedEvent);
             log.info("End - Sending OrderPlacedEvent {} to Kafka topic", orderPlacedEvent);
 
-        }else{
-            throw new RuntimeException("Product with SkuCode "+orderRequest.skuCode()+" is not in stock");
+        } else {
+            throw new RuntimeException("Product with SkuCode " + orderRequest.skuCode() + " is not in stock");
         }
-
     }
 
     public List<Order> getOrderHistory(String email) {
-        return orderRepository.findByUserEmail(email);
+        // Calls our new foolproof query
+        return orderRepository.findByExactEmail(email);
     }
 
     public List<Order> getAllOrders() {
-        // findAll() is provided automatically by JpaRepository!
         return orderRepository.findAll();
+    }
+
+    // 👇 ADDED: The logic for the Admin Panel to update order statuses
+    public void updateOrderStatus(Long orderId, String status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
+        order.setStatus(status);
+        orderRepository.save(order);
     }
 }

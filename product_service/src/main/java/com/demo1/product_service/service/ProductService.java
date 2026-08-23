@@ -23,23 +23,24 @@ public class ProductService {
                 .description(productRequest.description())
                 .skuCode(productRequest.skuCode())
                 .price(productRequest.price())
+                .imageUrl(productRequest.imageURL())
                 .build();
         productRepository.save(product);
         log.info("Success!! Product created successfully!");
-        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice()) ;
+        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice(),  product.getImageUrl()) ;
     }
 
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice()))
+                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice(), product.getImageUrl()))
                 .toList();
     }
     public List<ProductResponse> getAllProductsByCategory(String category) {
         return productRepository.findByCategory(category)
                 .stream()
                 // Copy whatever parameters you have in your map() function above!
-                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice()))
+                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice(),  product.getImageUrl()))
                 .toList();
     }
 }
