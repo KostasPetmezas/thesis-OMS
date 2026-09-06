@@ -9,6 +9,7 @@ export interface Order {
     firstName: string;
     lastName: string;
   };
+  status?: string;
 }
 export interface UserDetails {
   email: string;

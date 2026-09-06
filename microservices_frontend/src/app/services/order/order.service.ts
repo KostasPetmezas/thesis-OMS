@@ -55,4 +55,20 @@ export class OrderService {
       responseType: 'text'
     });
   }
+  updateOrderStatus(orderId: number, status: string) {
+    const authDataString = sessionStorage.getItem('0-angular-client');
+    let token = null;
+
+    if (authDataString) {
+      token = JSON.parse(authDataString).authzData;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.patch(`http://localhost:9000/api/order/${orderId}/status?status=${status}`, {}, {
+      headers: headers
+    });
+  }
 }

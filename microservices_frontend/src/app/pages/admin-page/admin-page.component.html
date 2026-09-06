@@ -37,13 +37,13 @@
             <th scope="col" class="px-6 py-4">Quantity</th>
             <th scope="col" class="px-6 py-4">Price</th>
             <th scope="col" class="px-6 py-4">Total</th>
+            <th scope="col" class="px-6 py-4 text-center">Status</th>
           </tr>
           </thead>
           <tbody>
             @for (order of allOrders; track order.orderNumber) {
               <tr class="border-b border-gray-100 hover:bg-gray-50">
                 <td class="px-6 py-4">
-                  <!-- Notice the ?. which stops the crash if userDetails is null -->
                   <div class="font-semibold text-gray-800">
                     {{ order.userDetails?.firstName || 'Unknown' }} {{ order.userDetails?.lastName || 'User' }}
                   </div>
@@ -54,9 +54,26 @@
                 <td class="px-6 py-4 font-mono text-gray-500">#{{ order.orderNumber | slice:0:8 }}...</td>
                 <td class="px-6 py-4 font-semibold text-gray-800">{{ order.skuCode }}</td>
                 <td class="px-6 py-4">{{ order.quantity }}</td>
-                <!-- Note: I kept your number pipe format, but swapped $ for € to match your platform -->
                 <td class="px-6 py-4">€{{ order.price | number:'1.2-2' }}</td>
                 <td class="px-6 py-4 font-bold text-gray-800">€{{ (order.price * order.quantity) | number:'1.2-2' }}</td>
+                <td class="px-6 py-4 text-center">
+                  <!-- Color-Coded Dropdown Button -->
+                  <select
+                    #statusDropdown
+                    (change)="updateStatus(order, statusDropdown.value)"
+                    [value]="order.status || 'PENDING'"
+                    class="text-xs font-bold uppercase px-3 py-1.5 rounded-md border cursor-pointer focus:outline-none shadow-sm transition-colors"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800 border-green-300 hover:bg-green-200': order.status === 'APPROVED',
+                      'bg-orange-100 text-orange-800 border-orange-300 hover:bg-orange-200': order.status === 'PENDING' || !order.status,
+                      'bg-red-100 text-red-800 border-red-300 hover:bg-red-200': order.status === 'DECLINED'
+                    }"
+                  >
+                    <option value="PENDING" class="bg-white text-gray-800">Pending</option>
+                    <option value="APPROVED" class="bg-white text-gray-800">Approved</option>
+                    <option value="DECLINED" class="bg-white text-gray-800">Declined</option>
+                  </select>
+                </td>
               </tr>
             }
           </tbody>

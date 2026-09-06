@@ -13,4 +13,5 @@ export const routes: Routes = [
   { path: 'history', component: OrderHistoryComponent },
   { path: 'product/:skuCode', component: ProductPageComponent },
   { path: 'admin' , component: AdminPageComponent },
+  { path: 'unauthorized', redirectTo: '', pathMatch: 'full' },
 ];

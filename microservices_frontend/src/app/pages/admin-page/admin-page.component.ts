@@ -23,15 +23,12 @@ export class AdminPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.oidcSecurityService.userData$.subscribe(result => {
-      // Check if the user is logged in AND their Keycloak username is 'admin'
       const username = result.userData?.preferred_username;
-
       if (username === 'admin') {
         this.fetchAllOrders();
       } else {
         this.accessDenied = true;
         this.isLoading = false;
-        // Optional: Kick them out automatically after 2 seconds
         setTimeout(() => this.router.navigateByUrl('/'), 2000);
       }
     });
@@ -40,7 +37,11 @@ export class AdminPageComponent implements OnInit {
   fetchAllOrders() {
     this.orderService.getAllOrdersForAdmin().subscribe({
       next: (orders) => {
-        this.allOrders = orders;
+        // Sort orders so the newest ones (highest ID) appear first
+        this.allOrders = orders.sort((a, b) => {
+          // Fallback to 0 if id is undefined to prevent crash
+          return (b.id || 0) - (a.id || 0);
+        });
         this.isLoading = false;
       },
       error: (err) => {
@@ -48,5 +49,23 @@ export class AdminPageComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  updateStatus(order: Order, newStatus: string) {
+    const oldStatus = order.status;
+
+    // Optimistically update UI so the color changes instantly
+    order.status = newStatus;
+
+    if(order.id) {
+      this.orderService.updateOrderStatus(order.id, newStatus).subscribe({
+        next: () => console.log(`Order ${order.id} status changed to ${newStatus}`),
+        error: (err: any) => { // 👈 Added ": any" right here
+          console.error('Failed to update status', err);
+          // Revert UI color back if the backend HTTP call failed
+          order.status = oldStatus;
+        }
+      });
+    }
   }
 }
