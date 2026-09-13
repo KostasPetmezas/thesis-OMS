@@ -79,10 +79,11 @@
                   }
 
                   @for (notif of notifications; track notif.id) {
-                    <div class="p-4 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700" [ngClass]="{'bg-blue-50/40 dark:bg-gray-700': !notif.isRead}">
+                    <div class="p-4 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                         [ngClass]="{'bg-blue-50/40 dark:bg-gray-700': !notif.read}">
                       <div class="flex items-start">
                         <div class="mt-1.5 mr-3">
-                          @if (!notif.isRead) { <span class="block w-2 h-2 bg-red-500 rounded-full"></span> }
+                          @if (!notif.read) { <span class="block w-2 h-2 bg-red-500 rounded-full"></span> }
                         </div>
                         <div>
                           <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ notif.message }}</p>

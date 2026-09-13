@@ -6,8 +6,8 @@ export interface Notification {
   id?: number;
   recipientEmail: string;
   message: string;
-  isRead: boolean;
-  dateCreated: string; // Ταιριάζει με το πεδίο της Java
+  read: boolean; // ΑΛΛΑΞΕ ΣΕ 'read'
+  dateCreated: string;
   type: string;
 }
 
@@ -17,11 +17,9 @@ export interface Notification {
 export class NotificationService {
   private http = inject(HttpClient);
 
-  // Ξεκινάει με άδεια λίστα
   private notificationsSource = new BehaviorSubject<Notification[]>([]);
   notifications$ = this.notificationsSource.asObservable();
 
-  // Ζητάει τα πραγματικά δεδομένα από το Backend
   fetchNotifications(token: string) {
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
     this.http.get<Notification[]>('http://localhost:9000/api/order/notifications', { headers })
@@ -32,7 +30,8 @@ export class NotificationService {
   }
 
   getUnreadCount(): number {
-    return this.notificationsSource.value.filter(n => !n.isRead).length;
+    // ΑΛΛΑΞΕ ΣΕ 'n.read'
+    return this.notificationsSource.value.filter(n => !n.read).length;
   }
 
   addNotification(notification: Notification) {
@@ -40,8 +39,17 @@ export class NotificationService {
     this.notificationsSource.next([notification, ...current]);
   }
 
-  markAllAsRead() {
-    const updated = this.notificationsSource.value.map(n => ({ ...n, isRead: true }));
-    this.notificationsSource.next(updated);
+  markAllAsRead(token: string) {
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+
+    this.http.put('http://localhost:9000/api/order/notifications/mark-read', {}, { headers })
+      .subscribe({
+        next: () => {
+          // ΑΛΛΑΞΕ ΣΕ 'read: true'
+          const updated = this.notificationsSource.value.map(n => ({ ...n, read: true }));
+          this.notificationsSource.next(updated);
+        },
+        error: (err) => console.error('Failed to mark as read in DB', err)
+      });
   }
 }

@@ -18,4 +18,11 @@ public class InventoryController {
     public boolean isInStock(@RequestParam String skuCode, @RequestParam Integer quantity) {
         return inventoryService.isInStock(skuCode, quantity);
     }
+
+    // ΝΕΟ ENDPOINT: Για την αφαίρεση του αποθέματος
+    @PutMapping("/reduce")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean reduceStock(@RequestParam String skuCode, @RequestParam Integer quantity) {
+        return inventoryService.reduceStock(skuCode, quantity);
+    }
 }

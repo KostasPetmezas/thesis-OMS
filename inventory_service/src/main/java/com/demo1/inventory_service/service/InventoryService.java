@@ -11,22 +11,27 @@ import org.springframework.stereotype.Service;
 public class InventoryService {
     private final InventoryRepository inventoryRepository;
 
-    @Transactional
+    // ΦΑΣΗ 1: Διαβάζει μόνο. Καλείται όταν ο πελάτης πατάει "Order".
     public boolean isInStock(String skuCode, Integer quantity) {
         Inventory inventory = inventoryRepository.findBySkuCode(skuCode)
                 .orElseThrow(() -> new RuntimeException(("Product with SkuCode " + skuCode + " not found")));
 
+        // ΜΟΝΟ ΕΛΕΓΧΟΣ: Επιστρέφει true αν υπάρχει αρκετό απόθεμα, false αν όχι.
+        return inventory.getQuantity() >= quantity;
+    }
+
+    // ΦΑΣΗ 2: Γράφει στη βάση. Καλείται ΟΤΑΝ και ΑΝ ο Admin πατήσει "APPROVED".
+    @Transactional
+    public boolean reduceStock(String skuCode, Integer quantity) {
+        Inventory inventory = inventoryRepository.findBySkuCode(skuCode)
+                .orElseThrow(() -> new RuntimeException("Product with SkuCode " + skuCode + " not found"));
+
         if (inventory.getQuantity() >= quantity) {
-
-            // 3. DEDUCT THE STOCK!
+            // ΕΔΩ ΓΙΝΕΤΑΙ Η ΑΦΑΙΡΕΣΗ!
             inventory.setQuantity(inventory.getQuantity() - quantity);
-
-            // 4. Save the new quantity back to MySQL
             inventoryRepository.save(inventory);
-
             return true;
-        } else {
-            return false; // Not enough stock
         }
+        return false; // Το προϊόν εξαντλήθηκε στο μεσοδιάστημα
     }
 }

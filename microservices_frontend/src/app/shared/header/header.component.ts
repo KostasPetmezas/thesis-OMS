@@ -72,5 +72,12 @@ export class HeaderComponent implements OnInit {
   login() { this.oidcSecurityService.authorize(); }
   logout() { this.oidcSecurityService.logoff().subscribe(); }
   toggleNotifications() { this.isMenuOpen = !this.isMenuOpen; }
-  markAsRead() { this.notificationService.markAllAsRead(); }
+  // Αντικατάστησε την markAsRead() με αυτή:
+  markAsRead() {
+    this.oidcSecurityService.getAccessToken().subscribe(token => {
+      if (token) {
+        this.notificationService.markAllAsRead(token);
+      }
+    });
+  }
 }

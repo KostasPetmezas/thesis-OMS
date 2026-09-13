@@ -28,4 +28,16 @@ public class NotificationController {
         String email = jwt.getClaimAsString("email");
         return notificationRepository.findByRecipientEmailOrderByDateCreatedDesc(email);
     }
+
+
+    @PutMapping("/mark-read")
+    public void markAllAsRead(@AuthenticationPrincipal Jwt jwt) {
+        String username = jwt.getClaimAsString("preferred_username");
+
+        // Βρίσκουμε αν είναι ο admin ή απλός χρήστης
+        String recipient = "admin".equals(username) ? "admin" : jwt.getClaimAsString("email");
+
+        // Καλούμε το Repository για να κάνει το Update στη βάση
+        notificationRepository.markAllAsRead(recipient);
+    }
 }

@@ -74,6 +74,17 @@ public class OrderService {
     public void updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
+
+        // ΛΟΓΙΚΗ ΑΦΑΙΡΕΣΗΣ: Εκτελείται ΜΟΝΟ αν η παραγγελία εγκρίνεται (και δεν ήταν ήδη εγκεκριμένη)
+        if ("APPROVED".equalsIgnoreCase(status) && !"APPROVED".equalsIgnoreCase(order.getStatus())) {
+            boolean stockDeducted = inventoryClient.reduceStock(order.getSkuCode(), order.getQuantity());
+
+            if (!stockDeducted) {
+                // Αν εξαντλήθηκε στο μεσοδιάστημα, η έγκριση ακυρώνεται και το Frontend δείχνει error
+                throw new RuntimeException("Αποτυχία: Δεν υπάρχει επαρκές απόθεμα για την έγκριση της παραγγελίας.");
+            }
+        }
+
         order.setStatus(status);
         orderRepository.save(order);
 
