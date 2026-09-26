@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { NotificationService, Notification } from '../../services/notification/notification.service';
-import { WebsocketService } from '../../services/websocket.service'; // 👈 1. Κάνε import το Websocket Service
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-header',
@@ -16,12 +16,15 @@ export class HeaderComponent implements OnInit {
   private readonly oidcSecurityService = inject(OidcSecurityService);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
-  private readonly websocketService = inject(WebsocketService); // 👈 2. Κάνε το inject
+  private readonly websocketService = inject(WebsocketService);
 
   isAuthenticated = false;
   username = '';
   isAdmin = false;
-  isMenuOpen = false;
+
+  isMenuOpen = false; // Για το dropdown των ειδοποιήσεων
+  isMobileMenuOpen = false; // Προσθήκη για το hamburger μενού στα κινητά
+
   notifications: Notification[] = [];
   unreadCount = 0;
 
@@ -41,18 +44,15 @@ export class HeaderComponent implements OnInit {
           if (token) this.notificationService.fetchNotifications(token);
         });
 
-        // 👈 3. LIVE WEB SOCKETS ΕΔΩ
         if (this.isAdmin) {
-          // Ο Admin ακούει το γενικό κανάλι
           this.websocketService.listenForAdminAlerts((msg) => {
-            const newAlert = JSON.parse(msg); // Το Spring Boot στέλνει JSON
+            const newAlert = JSON.parse(msg);
             this.notificationService.addNotification(newAlert);
           });
 
           if (this.router.url === '/') this.router.navigate(['/admin']);
 
         } else if (userData.email) {
-          // Ο απλός χρήστης ακούει το προσωπικό του κανάλι
           this.websocketService.listenForUserAlerts(userData.email, (msg) => {
             const newAlert = JSON.parse(msg);
             this.notificationService.addNotification(newAlert);
@@ -71,8 +71,12 @@ export class HeaderComponent implements OnInit {
 
   login() { this.oidcSecurityService.authorize(); }
   logout() { this.oidcSecurityService.logoff().subscribe(); }
+
   toggleNotifications() { this.isMenuOpen = !this.isMenuOpen; }
-  // Αντικατάστησε την markAsRead() με αυτή:
+
+  // Μέθοδος για το άνοιγμα/κλείσιμο του mobile μενού
+  toggleMobileMenu() { this.isMobileMenuOpen = !this.isMobileMenuOpen; }
+
   markAsRead() {
     this.oidcSecurityService.getAccessToken().subscribe(token => {
       if (token) {

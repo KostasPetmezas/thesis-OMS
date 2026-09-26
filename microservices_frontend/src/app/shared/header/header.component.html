@@ -11,6 +11,7 @@
     <!-- Mobile Hamburger Menu Button -->
     <div class="flex items-center">
       <button
+        (click)="toggleMobileMenu()"
         id="menu-toggle"
         type="button"
         class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden"
@@ -23,7 +24,8 @@
     </div>
 
     <!-- Desktop / Mobile Links -->
-    <div class="w-full md:block md:w-auto hidden" id="mobile-menu">
+    <!-- Αντικαταστάθηκε το σκέτο "hidden" με το [class.hidden]="!isMobileMenuOpen" -->
+    <div class="w-full md:block md:w-auto" [class.hidden]="!isMobileMenuOpen" id="mobile-menu">
       <ul class="flex flex-col mt-4 md:flex-row md:items-center md:space-x-8 md:mt-0 md:text-sm md:font-medium">
 
         @if (isAuthenticated) {
@@ -31,7 +33,8 @@
           <!-- 1. Admin Dashboard (Μόνο για Admin) -->
           @if (isAdmin) {
             <li>
-              <a routerLink="/admin" class="block py-2 pr-4 pl-3 text-red-600 font-bold hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 cursor-pointer">
+              <!-- Προστέθηκε (click)="toggleMobileMenu()" για να κλείνει το μενού αν το πατήσεις από κινητό -->
+              <a routerLink="/admin" (click)="toggleMobileMenu()" class="block py-2 pr-4 pl-3 text-red-600 font-bold hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 cursor-pointer">
                 Admin Dashboard
               </a>
             </li>
@@ -39,27 +42,29 @@
 
           <!-- 2. Order History -->
           <li>
-            <a routerLink="/history" class="block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white cursor-pointer">
+            <a routerLink="/history" (click)="toggleMobileMenu()" class="block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white cursor-pointer">
               Order History
             </a>
           </li>
 
           <!-- 3. View Cart -->
           <li>
-            <a routerLink="/cart" class="block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white cursor-pointer">
+            <a routerLink="/cart" (click)="toggleMobileMenu()" class="block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white cursor-pointer">
               View Cart
             </a>
           </li>
 
           <!-- 4. Notification Bell & Dropdown -->
           <li class="relative">
-            <button (click)="toggleNotifications()" class="relative block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white focus:outline-none">
+            <button (click)="toggleNotifications()" class="relative block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white focus:outline-none w-full text-left md:w-auto">
+              <!-- Προστέθηκε κείμενο που φαίνεται μόνο στο κινητό για το καμπανάκι -->
+              <span class="md:hidden mr-2">Ειδοποιήσεις</span>
               <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
               </svg>
-              <!-- Κόκκινο Badge αν υπάρχουν αδιάβαστα -->
               @if (unreadCount > 0) {
-                <span class="absolute top-0 right-1 md:-top-2 md:-right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                <!-- Διορθώθηκε η θέση του badge για να φαίνεται σωστά και στο κινητό -->
+                <span class="absolute top-2 left-28 md:-top-2 md:-right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
                                     {{ unreadCount }}
                                 </span>
               }
@@ -67,7 +72,8 @@
 
             <!-- Notification Panel -->
             @if (isMenuOpen) {
-              <div class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700">
+              <!-- Προστέθηκε το md:right-0 για να ανοίγει σωστά στο desktop, ενώ στο κινητό ακολουθεί τη ροή -->
+              <div class="md:absolute md:right-0 mt-2 w-full md:w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700">
                 <div class="flex justify-between items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                   <h3 class="font-bold text-gray-800 dark:text-white">Οι ειδοποιήσεις μου</h3>
                   <button (click)="markAsRead()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">Διαβασμένα</button>
@@ -97,7 +103,7 @@
             }
           </li>
 
-          <!-- 5. User Greeting & Logout (Τοποθετημένα μαζί για να μη σπάνε γραμμή στο Desktop) -->
+          <!-- 5. User Greeting & Logout -->
           <li class="flex flex-col md:flex-row md:items-center md:space-x-4 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 pt-2 md:pt-0 md:pl-4 mt-2 md:mt-0">
             <p class="text-gray-900 dark:text-white py-2 md:py-0 pr-4 pl-3 md:p-0 font-bold">Hi {{ username }}</p>
             <a (click)="logout()" class="block py-2 pr-4 pl-3 text-gray-700 cursor-pointer hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
