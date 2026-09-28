@@ -56,7 +56,7 @@ export class HomePageComponent implements OnInit {
         this.loadProducts();
       }
     );
-    // 2. NEW: Check if the user is the admin
+    // Check if the user is the admin
     this.oidcSecurityService.userData$.subscribe(result => {
       const username = result.userData?.preferred_username;
       // If the username is exactly 'admin', flip the switch to true
@@ -171,7 +171,7 @@ export class HomePageComponent implements OnInit {
       }
     })
   }
-  // --- NEW NAVIGATION METHOD ---
+  // --- NAVIGATION METHOD ---
   goToProductPage(skuCode: string) {
     this.router.navigate(['/product', skuCode]);
   }

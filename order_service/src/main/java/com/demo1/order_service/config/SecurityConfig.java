@@ -15,10 +15,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Removed the .cors() call completely to prevent duplicate headers
+                // CORS gets set up from API Gateway
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        // 👇 explicitly permit all preflight OPTIONS requests without a token
+                        // Explicitly permit all preflight OPTIONS requests without a token
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/order/**").authenticated()

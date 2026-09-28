@@ -39,7 +39,6 @@ public class ProductService {
     public List<ProductResponse> getAllProductsByCategory(String category) {
         return productRepository.findByCategory(category)
                 .stream()
-                // Copy whatever parameters you have in your map() function above!
                 .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice(),  product.getImageUrl()))
                 .toList();
     }

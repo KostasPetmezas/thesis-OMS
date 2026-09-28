@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderPlacedEvent {
+public class OrderPlacedEvent {// Must match OrderPlacedEvent in order_service
     private String orderNumber;
     private String email;
 }

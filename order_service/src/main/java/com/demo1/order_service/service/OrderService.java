@@ -29,7 +29,7 @@ public class OrderService {
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-
+    // Checks stock only; deduction happens on approval
     public void placeOrder(OrderRequest orderRequest){
         var isProductInStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
 
@@ -42,7 +42,7 @@ public class OrderService {
             order.setQuantity(orderRequest.quantity());
             order.setUserDetails(orderRequest.userDetails());
 
-            // The status defaults to "PENDING" automatically from the Order entity!
+            // The status defaults to "PENDING" automatically from the Order entity
 
             orderRepository.save(order);
 
@@ -62,7 +62,6 @@ public class OrderService {
     }
 
     public List<Order> getOrderHistory(String email) {
-        // Calls our new foolproof query
         return orderRepository.findByExactEmail(email);
     }
 
@@ -70,17 +69,17 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    // 👇 ADDED: The logic for the Admin Panel to update order statuses
+    //  The logic for the Admin Panel to update order statuses
     public void updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
 
-        // ΛΟΓΙΚΗ ΑΦΑΙΡΕΣΗΣ: Εκτελείται ΜΟΝΟ αν η παραγγελία εγκρίνεται (και δεν ήταν ήδη εγκεκριμένη)
+        // Database updates if order is approved
         if ("APPROVED".equalsIgnoreCase(status) && !"APPROVED".equalsIgnoreCase(order.getStatus())) {
             boolean stockDeducted = inventoryClient.reduceStock(order.getSkuCode(), order.getQuantity());
 
             if (!stockDeducted) {
-                // Αν εξαντλήθηκε στο μεσοδιάστημα, η έγκριση ακυρώνεται και το Frontend δείχνει error
+                // If item is extinct, approval gets canceled and error is displayed
                 throw new RuntimeException("Αποτυχία: Δεν υπάρχει επαρκές απόθεμα για την έγκριση της παραγγελίας.");
             }
         }

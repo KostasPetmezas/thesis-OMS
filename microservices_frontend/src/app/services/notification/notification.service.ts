@@ -6,7 +6,7 @@ export interface Notification {
   id?: number;
   recipientEmail: string;
   message: string;
-  read: boolean; // ΑΛΛΑΞΕ ΣΕ 'read'
+  read: boolean;// Serialized as "read" from the backend's isRead
   dateCreated: string;
   type: string;
 }
@@ -30,7 +30,6 @@ export class NotificationService {
   }
 
   getUnreadCount(): number {
-    // ΑΛΛΑΞΕ ΣΕ 'n.read'
     return this.notificationsSource.value.filter(n => !n.read).length;
   }
 
@@ -45,7 +44,6 @@ export class NotificationService {
     this.http.put('http://localhost:9000/api/order/notifications/mark-read', {}, { headers })
       .subscribe({
         next: () => {
-          // ΑΛΛΑΞΕ ΣΕ 'read: true'
           const updated = this.notificationsSource.value.map(n => ({ ...n, read: true }));
           this.notificationsSource.next(updated);
         },

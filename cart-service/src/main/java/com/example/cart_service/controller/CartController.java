@@ -34,7 +34,7 @@ public class CartController {
 
         // 3. Add the item and save back to Redis
         if (existingItem.isPresent()) {
-            // 3a. If it exists, JUST ADD THE QUANTITIES TOGETHER!
+            // 3a. If it exists, just add the quantities together
             int newQuantity = existingItem.get().getQuantity() + newItem.getQuantity();
             existingItem.get().setQuantity(newQuantity);
         } else {

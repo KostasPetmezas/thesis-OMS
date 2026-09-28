@@ -35,7 +35,7 @@ export class CartComponent implements OnInit {
   get totalCartPrice(): number {
     return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
-
+  // One order per cart item; cart cleared only if all succeed
   checkout(): void {
     if (this.cartItems.length === 0) return;
 

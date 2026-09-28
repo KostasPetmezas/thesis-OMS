@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @RedisHash("Cart")
 public class Cart {
-    @Id
+    @Id// Keycloak username; one cart per user.
     private String userId;
     private List<CartItem> items;
 

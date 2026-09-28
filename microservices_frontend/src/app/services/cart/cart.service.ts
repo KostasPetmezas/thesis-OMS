@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// You can move these interfaces to a separate file (e.g., model/cart.ts) if you prefer!
 export interface CartItem {
   skuCode: string;
   price: number;
@@ -41,7 +40,7 @@ export class CartService {
 
   // 3. Delete the entire cart (used after a successful checkout)
   clearCart(): Observable<string> {
-    // We use responseType 'text' here just like your OrderService,
+    // We use responseType 'text' here,
     // because a DELETE request often returns an empty body or simple string
     const httpOptions = {
       responseType: 'text' as 'json'

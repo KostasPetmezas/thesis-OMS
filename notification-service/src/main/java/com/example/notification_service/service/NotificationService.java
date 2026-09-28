@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
     private final JavaMailSender javaMailSender;
 
-
+    // Sends an email for each order event
     @KafkaListener(topics="order-placed", groupId = "notificationId2")
     public void listen(OrderPlacedEvent orderPlacedEvent) {
         log.info("Received order placed event {}", orderPlacedEvent);
@@ -37,7 +37,7 @@ public class NotificationService {
                     orderPlacedEvent.getOrderNumber()));
         };
         try{
-            javaMailSender.send(messagePreparator);
+            javaMailSender.send(messagePreparator);// Delivered to the Mailtrap sandbox, not real inboxes
             log.info("Mail sent successfully");
         }catch (MailException e){
             log.error("Exception occurred while sending email",e);

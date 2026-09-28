@@ -14,8 +14,6 @@ import org.springframework.web.service.annotation.PutExchange;
 public interface InventoryClient {
     Logger log = LoggerFactory.getLogger(InventoryClient.class);
 
-    //@CircuitBreaker(name="inventory", fallbackMethod = "fallbackMethod")
-    //@Retry(name="inventory")
     @GetExchange("/api/inventory")
     boolean isInStock(@RequestParam("skuCode") String skuCode, @RequestParam("quantity") Integer quantity);
 

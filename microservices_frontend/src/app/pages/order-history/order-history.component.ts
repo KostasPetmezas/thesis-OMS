@@ -6,7 +6,7 @@ import { OrderService } from '../../services/order/order.service';
   selector: 'app-order-history',
   standalone: true,
   imports: [
-    CommonModule // 👈 This automatically includes NgClass, SlicePipe, and DecimalPipe!
+    CommonModule
   ],
   templateUrl: './order-history.component.html',
   styleUrl: './order-history.component.css'

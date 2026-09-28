@@ -12,8 +12,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes),
-
-    // 👇 2. ADD () TO EXECUTE THE BUILT-IN INTERCEPTOR 👇
+    
     provideHttpClient(withInterceptors([authInterceptor()])),
 
     provideAuth(authConfig),

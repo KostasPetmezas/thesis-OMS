@@ -1,9 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router'; // <-- To read the URL
+import { ActivatedRoute } from '@angular/router';
 import { CartService } from '../../services/cart/cart.service';
-import { ProductService } from '../../services/product/product.service'; // <-- To fetch the DB
+import { ProductService } from '../../services/product/product.service';
 
 @Component({
   selector: 'app-product-page',
@@ -27,7 +27,7 @@ export class ProductPageComponent implements OnInit {
     const skuCode = this.route.snapshot.paramMap.get('skuCode');
 
     if (skuCode) {
-      // 2. Fetch the real data from your Spring Boot database!
+      // 2. Fetch the real data from database!
       this.productService.getProductBySku(skuCode).subscribe({
         next: (data) => {
           this.product = data;

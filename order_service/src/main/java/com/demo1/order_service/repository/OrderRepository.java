@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    // nativeQuery = true forces it to use raw MySQL, bypassing the IDE's Java inspection
+    // Display all orders for each user
     @Query(value = "SELECT * FROM t_orders WHERE email = :email ORDER BY id DESC", nativeQuery = true)
     List<Order> findByExactEmail(@Param("email") String email);
 }

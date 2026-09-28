@@ -24,7 +24,7 @@ export class AdminPageComponent implements OnInit {
   ngOnInit(): void {
     this.oidcSecurityService.userData$.subscribe(result => {
       const username = result.userData?.preferred_username;
-      if (username === 'admin') {
+      if (username === 'admin') {// UI-only admin check by username
         this.fetchAllOrders();
       } else {
         this.accessDenied = true;
@@ -54,13 +54,13 @@ export class AdminPageComponent implements OnInit {
   updateStatus(order: Order, newStatus: string) {
     const oldStatus = order.status;
 
-    // Optimistically update UI so the color changes instantly
+    // update UI so the color changes instantly
     order.status = newStatus;
 
     if(order.id) {
       this.orderService.updateOrderStatus(order.id, newStatus).subscribe({
         next: () => console.log(`Order ${order.id} status changed to ${newStatus}`),
-        error: (err: any) => { // 👈 Added ": any" right here
+        error: (err: any) => {
           console.error('Failed to update status', err);
           // Revert UI color back if the backend HTTP call failed
           order.status = oldStatus;

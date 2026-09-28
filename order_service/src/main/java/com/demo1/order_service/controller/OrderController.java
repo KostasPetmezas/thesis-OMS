@@ -38,14 +38,14 @@ public class OrderController {
         // Create the verified UserDetails object
         UserDetails secureUserDetails = new UserDetails(email, firstName, lastName);
 
-        // Overwrite using the exact fields from your OrderRequest record definition
+
         OrderRequest secureOrderRequest = new OrderRequest(
                 orderRequest.id(),
                 orderRequest.orderNumber(),
                 orderRequest.skuCode(),
                 orderRequest.price(),
                 orderRequest.quantity(),
-                secureUserDetails // Matches the 6th field (details) in your record
+                secureUserDetails
         );
 
         orderService.placeOrder(secureOrderRequest);
@@ -63,7 +63,6 @@ public class OrderController {
     }
     @GetMapping("/all")
     public ResponseEntity<List<Order>> getAllOrders() {
-        // Assuming your OrderService has a findAll() or similar method
         List<Order> allOrders = orderService.getAllOrders();
         return ResponseEntity.ok(allOrders);
     }

@@ -16,11 +16,13 @@ public class RestClientConfig {
     private String inventoryServiceUrl;
 
     @Bean
-    @LoadBalanced
+    @LoadBalanced// Resolves "http://inventory-service" via Eureka
     public RestClient.Builder restClientBuilder() {
         return RestClient.builder();
     }
 
+
+    // Generates the InventoryClient implementation at runtime
     @Bean
     public InventoryClient inventoryClient(RestClient.Builder builder) {
         RestClient restClient = builder

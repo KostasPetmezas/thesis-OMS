@@ -44,7 +44,7 @@ export class HeaderComponent implements OnInit {
           if (token) this.notificationService.fetchNotifications(token);
         });
 
-        if (this.isAdmin) {
+        if (this.isAdmin) {// UI-only admin check by username
           this.websocketService.listenForAdminAlerts((msg) => {
             const newAlert = JSON.parse(msg);
             this.notificationService.addNotification(newAlert);
@@ -74,7 +74,7 @@ export class HeaderComponent implements OnInit {
 
   toggleNotifications() { this.isMenuOpen = !this.isMenuOpen; }
 
-  // Μέθοδος για το άνοιγμα/κλείσιμο του mobile μενού
+  // Open/close mobile menu
   toggleMobileMenu() { this.isMobileMenuOpen = !this.isMobileMenuOpen; }
 
   markAsRead() {

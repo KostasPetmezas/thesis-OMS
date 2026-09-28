@@ -9,7 +9,6 @@ import {Order} from "../../model/order";
 })
 export class OrderService {
 
-  // 👇 THIS is the magic line that creates "this.http"
   constructor(private http: HttpClient) {
   }
   getAllOrdersForAdmin(): Observable<Order[]> {
@@ -27,7 +26,6 @@ export class OrderService {
       'Authorization': `Bearer ${token}`
     });
 
-    // We expect a JSON array of orders back, so no need for responseType: 'text' here!
     return this.http.get<any[]>('http://localhost:9000/api/order/history', { headers: headers });
   }
 

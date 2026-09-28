@@ -17,6 +17,7 @@ import java.net.URI;
 import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.setPath;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
 
+// Routes requests to services resolved via Eureka (lb://)
 @Configuration
 public class Routes {
 
@@ -29,6 +30,7 @@ public class Routes {
     public RouterFunction<ServerResponse> productServiceRoute() {
         return GatewayRouterFunctions.route("product_service")
                 .route(RequestPredicates.path("/api/product/**"), HandlerFunctions.http("lb://product-service"))
+                // On repeated failures, forward to /fallbackRoute
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("productServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
                 .build();
@@ -45,12 +47,13 @@ public class Routes {
     @Bean
     public RouterFunction<ServerResponse> orderServiceRoute() {
         return GatewayRouterFunctions.route("order_service")
-                // ADDED /** HERE
                 .route(RequestPredicates.path("/api/order/**"), HandlerFunctions.http("lb://order-service"))
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("orderServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
                 .build();
     }
+
+    // Exposes each service's OpenAPI spec for the aggregated Swagger UI
     @Bean
     public RouterFunction<ServerResponse> orderServiceSwaggerRoute() {
         return GatewayRouterFunctions.route("order_service_swagger")
@@ -95,7 +98,7 @@ public class Routes {
 
     @Bean
     public RouterFunction<ServerResponse> fallbackRoute() {
-        return GatewayRouterFunctions.route("fallbackRoute")
+        return GatewayRouterFunctions.route("fallbackRoute")// Returned when a circuit breaker is open
                 .route(RequestPredicates.path("/fallbackRoute"), request -> ServerResponse.status(HttpStatus.SERVICE_UNAVAILABLE)
                         .body("Service Unavailable, please try again later"))
                 .build();

@@ -1,12 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {
   OidcSecurityService,
-  PublicEventsService, // <-- NEW IMPORT
-  EventTypes           // <-- NEW IMPORT
+  PublicEventsService,
+  EventTypes
 } from "angular-auth-oidc-client";
 import { RouterModule } from "@angular/router";
 import { HeaderComponent } from "./shared/header/header.component";
-import { filter } from 'rxjs/operators'; // <-- NEW IMPORT
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
   title = 'microservices-shop-frontend';
 
   private readonly oidcSecurityService = inject(OidcSecurityService);
-  private readonly eventService = inject(PublicEventsService); // <-- NEW INJECTION
+  private readonly eventService = inject(PublicEventsService);
 
   ngOnInit(): void {
     this.oidcSecurityService
