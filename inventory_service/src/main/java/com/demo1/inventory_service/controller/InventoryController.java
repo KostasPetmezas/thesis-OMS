@@ -25,4 +25,11 @@ public class InventoryController {
     public boolean reduceStock(@RequestParam String skuCode, @RequestParam Integer quantity) {
         return inventoryService.reduceStock(skuCode, quantity);
     }
+
+    // Adds stock for a newly created product.
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addStock(@RequestParam String skuCode, @RequestParam Integer quantity) {
+        inventoryService.addStock(skuCode, quantity);
+    }
 }

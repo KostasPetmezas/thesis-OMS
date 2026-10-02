@@ -33,4 +33,14 @@ public class InventoryService {
         }
         return false; // False if items gets extinct
     }
+
+    // Creates the stock entry for a new product, or updates it if the SKU already exists.
+    @Transactional
+    public void addStock(String skuCode, Integer quantity) {
+        Inventory inventory = inventoryRepository.findBySkuCode(skuCode)
+                .orElseGet(Inventory::new);
+        inventory.setSkuCode(skuCode);
+        inventory.setQuantity(quantity);
+        inventoryRepository.save(inventory);
+    }
 }

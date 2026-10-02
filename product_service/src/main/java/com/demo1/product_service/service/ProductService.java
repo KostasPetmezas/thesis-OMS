@@ -7,6 +7,8 @@ import com.demo1.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,9 +20,19 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public ProductResponse createProduct(ProductRequest productRequest){
+         // Reject duplicate SKU codes; the SKU links the product to its stock and orders.
+        if (productRepository.findBySkuCode(productRequest.skuCode()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Product with SkuCode " + productRequest.skuCode() + " already exists");
+        }
+
+
+
+
         Product product = Product.builder()
                 .name(productRequest.name())
                 .description(productRequest.description())
+                .category(productRequest.category())
                 .skuCode(productRequest.skuCode())
                 .price(productRequest.price())
                 .imageUrl(productRequest.imageURL())

@@ -29,4 +29,9 @@ export class ProductService {
   getProductBySku(skuCode: string): Observable<any> {
     return this.http.get<any>(`http://localhost:9000/api/product/${skuCode}`);
   }
+
+  addStock(skuCode: string, quantity: number): Observable<void> {
+    const params = new HttpParams().set('skuCode', skuCode).set('quantity', quantity);
+    return this.http.post<void>('http://localhost:9000/api/inventory', null, { params });
+  }
 }

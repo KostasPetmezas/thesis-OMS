@@ -1,70 +1,105 @@
-<div class="container mx-auto p-4">
+<div class="container mx-auto p-4 max-w-2xl">
   <h2 class="text-2xl font-bold mb-4">Add Product</h2>
-  @if (productCreated) {
-    <h4 class="text-green-500">Product Created Successfully</h4>
+
+  @if (accessDenied) {
+    <div class="p-4 bg-red-100 text-red-700 rounded-lg shadow-sm font-semibold">
+      Access Denied. You do not have administrator privileges to view this page.
+    </div>
   }
-  <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()">
-    <div class="mb-4">
-      <label class="block text-gray-700" for="skuCode">SKU Code</label>
-      <input
-        type="text"
-        id="skuCode"
-        formControlName="skuCode"
-        class="border rounded w-full py-2 px-3 text-gray-700"
-      />
-      <div *ngIf="skuCode?.invalid && (skuCode?.dirty || skuCode?.touched)" class="text-red-500">
-        <div *ngIf="skuCode?.errors?.['required']">SKU Code is required.</div>
-        <div *ngIf="skuCode?.errors?.['minlength']">SKU Code must be at least 3 characters long.</div>
-      </div>
-    </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700" for="name">Name</label>
-      <input
-        type="text"
-        id="name"
-        formControlName="name"
-        class="border rounded w-full py-2 px-3 text-gray-700"
-      />
-      <div *ngIf="name?.invalid && (name?.dirty || name?.touched)" class="text-red-500">
-        <div *ngIf="name?.errors?.['required']">Name is required.</div>
-        <div *ngIf="name?.errors?.['minlength']">Name must be at least 3 characters long.</div>
-      </div>
-    </div>
+  @if (isAdmin) {
+    @if (productCreated) {
+      <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg">Product created successfully.</div>
+    }
+    @if (errorMessage) {
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">{{ errorMessage }}</div>
+    }
 
-    <div class="mb-4">
-      <label class="block text-gray-700" for="description">Description</label>
-      <textarea
-        id="description"
-        formControlName="description"
-        class="border rounded w-full py-2 px-3 text-gray-700"
-      ></textarea>
-      <div *ngIf="description?.invalid && (description?.dirty || description?.touched)" class="text-red-500">
-        <div *ngIf="description?.errors?.['required']">Description is required.</div>
-        <div *ngIf="description?.errors?.['minlength']">Description must be at least 10 characters long.</div>
-      </div>
-    </div>
+    <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()" class="bg-white p-6 rounded-lg shadow-sm space-y-4">
 
-    <div class="mb-4">
-      <label class="block text-gray-700" for="price">Price</label>
-      <input
-        type="number"
-        id="price"
-        formControlName="price"
-        class="border rounded w-full py-2 px-3 text-gray-700"
-      />
-      <div *ngIf="price?.invalid && (price?.dirty || price?.touched)" class="text-red-500">
-        <div *ngIf="price?.errors?.['required']">Price is required.</div>
-        <div *ngIf="price?.errors?.['min']">Price must be greater than 0.</div>
+      <div>
+        <label class="block text-gray-700 font-medium mb-1" for="name">Name</label>
+        <input id="name" type="text" formControlName="name" placeholder="iPhone 15"
+               class="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500" />
+        @if (isInvalid('name')) {
+          <p class="text-red-500 text-sm mt-1">Name is required.</p>
+        }
       </div>
-    </div>
 
-    <button
-      type="submit"
-      class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-      [disabled]="addProductForm.invalid"
-    >
-      Add Product
-    </button>
-  </form>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="skuCode">SKU Code</label>
+          <input id="skuCode" type="text" formControlName="skuCode" placeholder="iphone_15"
+                 class="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500" />
+          @if (isInvalid('skuCode')) {
+            <p class="text-red-500 text-sm mt-1">
+              @if (hasError('skuCode', 'required')) { SKU code is required. }
+              @else { Use lowercase letters, numbers and underscores (e.g. iphone_15). }
+            </p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="category">Category</label>
+          <select id="category" formControlName="category"
+                  class="border rounded w-full py-2 px-3 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
+            <option value="" disabled>Select a category</option>
+            @for (c of categories; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+          @if (isInvalid('category')) {
+            <p class="text-red-500 text-sm mt-1">Category is required.</p>
+          }
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="price">Price (€)</label>
+          <input id="price" type="number" step="0.01" min="0" formControlName="price"
+                 class="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500" />
+          @if (isInvalid('price')) {
+            <p class="text-red-500 text-sm mt-1">Price must be greater than 0.</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="quantity">Quantity in stock</label>
+          <input id="quantity" type="number" step="1" min="0" formControlName="quantity"
+                 class="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500" />
+          @if (isInvalid('quantity')) {
+            <p class="text-red-500 text-sm mt-1">Quantity must be a whole number, 0 or more.</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium mb-1" for="imageURL">Image URL</label>
+        <input id="imageURL" type="text" formControlName="imageURL" placeholder="https://..."
+               class="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500" />
+        @if (isInvalid('imageURL')) {
+          <p class="text-red-500 text-sm mt-1">Enter a valid URL starting with http:// or https://</p>
+        }
+        @if (addProductForm.get('imageURL')?.valid) {
+          <img [src]="addProductForm.get('imageURL')?.value" alt="Preview"
+               class="mt-2 h-32 object-contain border rounded bg-gray-50" />
+        }
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium mb-1" for="description">Description</label>
+        <textarea id="description" rows="3" formControlName="description"
+                  class="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+        @if (isInvalid('description')) {
+          <p class="text-red-500 text-sm mt-1">Description is required.</p>
+        }
+      </div>
+
+      <button type="submit" [disabled]="isSubmitting"
+              class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 disabled:opacity-50">
+        {{ isSubmitting ? 'Saving...' : 'Add Product' }}
+      </button>
+    </form>
+  }
 </div>
