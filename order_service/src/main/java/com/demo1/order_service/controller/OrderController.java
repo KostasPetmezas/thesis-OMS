@@ -56,6 +56,15 @@ public class OrderController {
         return "Order created";
     }
 
+    @GetMapping("/history")
+    public List<Order> getOrderHistory(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
+        if (email == null || email.isBlank()) {
+            email = jwt.getClaimAsString("preferred_username");
+        }
+        return orderService.getOrderHistory(email);
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllOrders(@AuthenticationPrincipal Jwt jwt) {
         // 1. Ελέγχουμε ποιος κάνει το request
@@ -67,11 +76,7 @@ public class OrderController {
         // 2. Αν είναι admin, προχωράμε κανονικά
         return ResponseEntity.ok(orderService.getAllOrders());
     }
-    @GetMapping("/all")
-    public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> allOrders = orderService.getAllOrders();
-        return ResponseEntity.ok(allOrders);
-    }
+
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestParam String status, @AuthenticationPrincipal Jwt jwt) {
