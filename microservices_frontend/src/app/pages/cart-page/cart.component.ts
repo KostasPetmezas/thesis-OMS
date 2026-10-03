@@ -2,9 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CurrencyPipe, NgIf } from "@angular/common";
 import { CartService } from "../../services/cart/cart.service";
 import { OrderService } from "../../services/order/order.service";
-import {CartItem} from "../../model/cart";
-import {forkJoin} from "rxjs";
-import {HttpHeaders} from "@angular/common/http";
+import { CartItem } from "../../model/cart";
+import { forkJoin } from "rxjs";
 
 @Component({
   selector: 'app-cart',
@@ -33,8 +32,10 @@ export class CartComponent implements OnInit {
 
   // Automatically calculates the total price of everything in the cart
   get totalCartPrice(): number {
+    // Προστέθηκε το * που έλειπε ανάμεσα στο price και το quantity
     return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
+
   // One order per cart item; cart cleared only if all succeed
   checkout(): void {
     if (this.cartItems.length === 0) return;
@@ -60,11 +61,17 @@ export class CartComponent implements OnInit {
     forkJoin(orderObservables).subscribe({
       next: (results) => {
         console.log('All orders placed successfully!', results);
+
+        // 1η ΑΛΛΑΓΗ: Μήνυμα επιτυχίας και αναμονής για approval
+        alert('Order Placed successfully! Please check again for approval.');
+
         this.clearCart(true); // Clear cart safely only after all succeed
       },
       error: (err) => {
         console.error('Failed to process checkout!', err);
-        alert('Failed to place one or more items. Check console for details.');
+
+        // 2η ΑΛΛΑΓΗ: Μήνυμα αποτυχίας λόγω έλλειψης αποθέματος
+        alert('There is not enough stock of this product! Please reduce the amount of your order!');
       }
     });
   }

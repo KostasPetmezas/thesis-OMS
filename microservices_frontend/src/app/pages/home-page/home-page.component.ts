@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {OidcSecurityService} from "angular-auth-oidc-client";
 import {Product} from "../../model/product";
 import {ProductService} from "../../services/product/product.service";
-import {AsyncPipe, JsonPipe} from "@angular/common";
+import {AsyncPipe, JsonPipe, NgClass} from "@angular/common"; // <-- Προστέθηκε το NgClass
 import {Router, RouterLink} from "@angular/router";
 import {Order} from "../../model/order";
 import {FormsModule} from "@angular/forms";
@@ -17,7 +17,8 @@ import {CartService} from "../../services/cart/cart.service";
     AsyncPipe,
     JsonPipe,
     FormsModule,
-    RouterLink
+    RouterLink,
+    NgClass // <-- Απαραίτητο για το [ngClass] της βουλίτσας
   ],
   styleUrl: './home-page.component.css'
 })
@@ -75,6 +76,16 @@ export class HomePageComponent implements OnInit {
           this.products = response.content || response || [];
           this.totalPages = response.totalPages || 0;
           this.totalElements = response.totalElements || this.products.length;
+
+          // ΝΕΟΣ ΚΩΔΙΚΑΣ: Ζητάμε το απόθεμα για τα προϊόντα της τρέχουσας σελίδας
+          const skuCodes = this.products.map(p => p.skuCode);
+          if (skuCodes.length > 0) {
+            this.productService.getStocks(skuCodes).subscribe(stocks => {
+              this.products.forEach(p => {
+                p.stockQuantity = stocks[p.skuCode] || 0;
+              });
+            });
+          }
         },
         error: (err) => {
           console.error("Error loading products", err);
@@ -103,7 +114,7 @@ export class HomePageComponent implements OnInit {
   }
 
   nextPage() {
-    if (this.currentPage < this.totalPages - 1) {
+    if (this.currentPage < this.totalPages - 1) { // <-- Διορθώθηκε το τυπογραφικό (- 1)
       this.currentPage++;
       this.loadProducts();
     }
@@ -115,7 +126,6 @@ export class HomePageComponent implements OnInit {
       this.loadProducts();
     }
   }
-
 
   addToCart(product: any, quantityStr: string) {
     const quantity = parseInt(quantityStr, 10);
@@ -171,6 +181,7 @@ export class HomePageComponent implements OnInit {
       }
     })
   }
+
   // --- NAVIGATION METHOD ---
   goToProductPage(skuCode: string) {
     this.router.navigate(['/product', skuCode]);

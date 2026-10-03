@@ -11,6 +11,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -52,14 +56,16 @@ public class OrderController {
         return "Order created";
     }
 
-    @GetMapping("/history")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Order> getOrderHistory(@AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("email");
-        if (email == null || email.isBlank()) {
-            email = jwt.getClaimAsString("preferred_username");
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllOrders(@AuthenticationPrincipal Jwt jwt) {
+        // 1. Ελέγχουμε ποιος κάνει το request
+        String username = jwt.getClaimAsString("preferred_username");
+        if (!"admin".equals(username)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Only admins can view all orders");
         }
-        return orderService.getOrderHistory(email);
+
+        // 2. Αν είναι admin, προχωράμε κανονικά
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
     @GetMapping("/all")
     public ResponseEntity<List<Order>> getAllOrders() {
@@ -68,9 +74,16 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}/status")
-    @ResponseStatus(HttpStatus.OK)
-    public void updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
+    public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestParam String status, @AuthenticationPrincipal Jwt jwt) {
+        // 1. Ελέγχουμε ποιος κάνει το request
+        String username = jwt.getClaimAsString("preferred_username");
+        if (!"admin".equals(username)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Only admins can change order status");
+        }
+
+        // 2. Αν είναι admin, προχωράμε κανονικά
         orderService.updateOrderStatus(id, status);
+        return ResponseEntity.ok().build();
     }
 
 

@@ -31,6 +31,8 @@ public class NotificationService {
                     
                     Your order with the order number: %s has been placed successfully.
                     
+                    Please check again on our site for Approval.
+                    
                     Thank you for choosing us
                     UnipiSpringShop
                     """,

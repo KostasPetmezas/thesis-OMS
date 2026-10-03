@@ -34,4 +34,9 @@ export class ProductService {
     const params = new HttpParams().set('skuCode', skuCode).set('quantity', quantity);
     return this.http.post<void>('http://localhost:9000/api/inventory', null, { params });
   }
+
+  getStocks(skuCodes: string[]): Observable<{ [key: string]: number }> {
+    const params = new HttpParams().set('skuCodes', skuCodes.join(','));
+    return this.http.get<{ [key: string]: number }>('http://localhost:9000/api/inventory/stocks', { params });
+  }
 }

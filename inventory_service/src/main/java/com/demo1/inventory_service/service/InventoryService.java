@@ -6,6 +6,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
@@ -43,4 +47,10 @@ public class InventoryService {
         inventory.setQuantity(quantity);
         inventoryRepository.save(inventory);
     }
+
+    public Map<String, Integer> getStocks(List<String> skuCodes) {
+        return inventoryRepository.findBySkuCodeIn(skuCodes).stream()
+                .collect(Collectors.toMap(Inventory::getSkuCode, Inventory::getQuantity));
+    }
 }
+

@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor
@@ -31,5 +34,11 @@ public class InventoryController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addStock(@RequestParam String skuCode, @RequestParam Integer quantity) {
         inventoryService.addStock(skuCode, quantity);
+    }
+
+    @GetMapping("/stocks")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Integer> getStocks(@RequestParam List<String> skuCodes) {
+        return inventoryService.getStocks(skuCodes);
     }
 }
